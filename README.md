@@ -1,1 +1,0 @@
-This repository contains the code for Tali's E155 website.
