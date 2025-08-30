@@ -1,0 +1,18 @@
+---
+title: "About Me"
+image: images/headshot.jpg
+about:
+    template: jolla
+    links:
+      - icon: linkedin
+        text: LinkedIn
+        href: https://www.linkedin.com/in/tali-smith/
+      - icon: github
+        text: Github
+        href: https://https://github.com/talismith
+---
+Tali Smith is a senior engineering student at Harvey Mudd College. This page documents her work in E155: Microprocessors.
+
+This is a Quarto website.
+
+To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
