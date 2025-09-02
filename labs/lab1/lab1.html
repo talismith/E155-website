@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>lab1 – E155 Portfolio</title>
+<title>Lab 1 Report – E155 Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -155,11 +155,84 @@ ul.task-list li input[type="checkbox"] {
         
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lab 1 Report</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Block Diagram</strong> <img src="images/lab1_block.jpeg" class="img-fluid" alt="Figure 1: Block Diagram of the Verilog design"> Figure 1 shows the overall block diagram of lab 1’s design. The design has two modules, top and determineHex. The inputs to the whole system are s and clk, and the outputs are seg and led.</p>
+<p><strong>Schematic</strong> <img src="images/lab1_block.jpeg" class="img-fluid" alt="Figure 2: Schematic of the physical circuit"> The physical layout of the design is shown in Figure 2. The iCE40UP is connected to the 7-segment display using 7 control signals. Due to a shortage of SMT diodes, 3 LEDs were connected externally to the iCE40UP. The LEDs and all 7 segments were also connected to 220 ohm current-limiting resistors.</p>
+<p><strong>Results</strong> The design meets all of the requirements. It can accurately depict all of the unique hexadecimal symbols on the 7-segment display, using the 4 switches. Additionally, the 3 external LEDs respond properly to the 4 switches, S0 and S1 create an XOR gate while S2 and S3 create an AND gate. The switches are oriented so that the adjacent switch controls the next bit, meaning the outside switches control the least significant bit and the most signficant bit.</p>
+<p>So far, including the setup parts of the lab, about 18 hours were spent on this lab. This is the time it took without aiming to meet all “excellence” specifications. Personally, the turn around time from class 1, github + quartus setup, soldering/board setup, and lab 1 was very fast. I thought the actual lab was very interesting and not too complex, but the entire setup of everything was frustratingly long, particularly with missing components. I would recommend having the github, quartus, and soldering due the first week, and then having lab 1 get its own week.</p>
+<p><strong>AI Reflection</strong> <img src="images/lab1chat.png" class="img-fluid" alt="Figure 3: Screenshot of synthesize ChatGPT code"> As shown in Figure 3 above, ChatGPT’s solution to the prompt “Write SystemVerilog HDL to leverage the internal high speed oscillator in the Lattice UP5K FPGA and blink an LED at 2 Hz. Take full advantage of SystemVerilog syntax, for example, using logic instead of wire and reg.” synthesized! I was impressed that ChatGPT’s code synthesized first try, my own code did not. Although none of ChatGPT’s code was new to me, it did use a slightly different method to create the counter than I did. There also were no warning or error messages from this code. Although it was a simpler problem than the entire Lab 1, I still consider this result impressive. In the future, if it were allowed, I would likely try to use an LLM for hints when I get stuck. I think getting completely stuck is when the most time is wasted, and getting a slight push or inspiration would probably be helpful (especially when I’m working entirely alone). However, I would not want to rely on an LLM because I think they are generally pretty unreliable, and just because the code synthesized does not guarantee it would correctly solve the problem. <strong>Code</strong> Included below is my Verilog code.</p>
+<p>// Tali Smith, natasmith@hmc.edu, 9/1/25 // Lab 1 // Code for implementing 7-segment display to display all hexadecimal digits using 4 switches.</p>
+<p>module top(input logic clk, input logic [3:0] s, output logic [2:0] led, output logic [6:0] seg);</p>
+<pre><code>logic int_osc;
+logic pulse;
+logic led_state = 0;
+logic [24:0] counter = 0;
+
+// Internal high-speed oscillator
+HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc));
+
+// determine the correct segments based on hex represented by switches
+determineHex hex(clk, s, seg);
+
+// control the LEDs using the switches
+// LED[0]
+assign led[0] = s[1] ^ s[0]; // s[1] OR s[0]
+// LED[1]
+assign led[1] = s[3] &amp; s[2]; // s3[3] AND s[2]
+// LED[2]
+// clock divider
+always_ff @(posedge int_osc)
+    begin
+        if (counter == 25'd10000000 - 1) begin // switch led every 10 mil cycles
+            counter &lt;= 0;
+            led[2] &lt;= ~led[2];
+        end else begin
+            counter &lt;= counter + 1;
+        end
+    end</code></pre>
+<p>endmodule</p>
+<p>// Tali Smith, natasmith@hmc.edu, 9/1/25 // This module takes in the 4 switches and determines what segments of the 7-segment // display should be lit to represent hex value (for common anode display) module determineHex(input logic clk, input logic [3:0] s, output logic [6:0] seg);</p>
+<pre><code>always_comb
+    case (s)
+        4'b0000: seg = 7'b1000000; // 0
+        4'b0001: seg = 7'b1111001; // 1
+        4'b0010: seg = 7'b0100100; // 2
+        4'b0011: seg = 7'b0110000; // 3
+        4'b0100: seg = 7'b0011001; // 4
+        4'b0101: seg = 7'b0010010; // 5
+        4'b0110: seg = 7'b0000010; // 6
+        4'b0111: seg = 7'b1111000; // 7
+        4'b1000: seg = 7'b0000000; // 8
+        4'b1001: seg = 7'b0010000; // 9
+        4'b1010: seg = 7'b0001000; // A
+        4'b1011: seg = 7'b0000011; // b
+        4'b1100: seg = 7'b1000110; // C
+        4'b1101: seg = 7'b0100001; // d
+        4'b1110: seg = 7'b0000110; // E
+        4'b1111: seg = 7'b0001110; // F
+        default: seg = 7'b1111111; // off
+    endcase</code></pre>
+<p>endmodule</p>
 
 
 
