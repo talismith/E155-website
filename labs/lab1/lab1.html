@@ -176,12 +176,20 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><strong>Block Diagram</strong> <img src="images/lab1_block.jpeg" class="img-fluid" alt="Figure 1: Block Diagram of the Verilog design"> Figure 1 shows the overall block diagram of lab 1’s design. The design has two modules, top and determineHex. The inputs to the whole system are s and clk, and the outputs are seg and led.</p>
-<p><strong>Schematic</strong> <img src="images/lab1_block.jpeg" class="img-fluid" alt="Figure 2: Schematic of the physical circuit"> The physical layout of the design is shown in Figure 2. The iCE40UP is connected to the 7-segment display using 7 control signals. Due to a shortage of SMT diodes, 3 LEDs were connected externally to the iCE40UP. The LEDs and all 7 segments were also connected to 220 ohm current-limiting resistors.</p>
-<p><strong>Results</strong> The design meets all of the requirements. It can accurately depict all of the unique hexadecimal symbols on the 7-segment display, using the 4 switches. Additionally, the 3 external LEDs respond properly to the 4 switches, S0 and S1 create an XOR gate while S2 and S3 create an AND gate. The switches are oriented so that the adjacent switch controls the next bit, meaning the outside switches control the least significant bit and the most signficant bit.</p>
+<p><strong>Block Diagram</strong><br>
+<img src="images/lab1_block.jpeg" class="img-fluid" alt="Figure 1: Block Diagram of the Verilog design"> Figure 1 shows the overall block diagram of lab 1’s design. The design has two modules, top and determineHex. The inputs to the whole system are s and clk, and the outputs are seg and led.</p>
+<p><strong>Schematic</strong><br>
+<img src="images/lab1_block.jpeg" class="img-fluid" alt="Figure 2: Schematic of the physical circuit"> The physical layout of the design is shown in Figure 2. The iCE40UP is connected to the 7-segment display using 7 control signals. Due to a shortage of SMT diodes, 3 LEDs were connected externally to the iCE40UP. The LEDs and all 7 segments were also connected to 220 ohm current-limiting resistors.</p>
+<p><strong>Results</strong><br>
+The design meets all of the requirements. It can accurately depict all of the unique hexadecimal symbols on the 7-segment display, using the 4 switches. Additionally, the 3 external LEDs respond properly to the 4 switches, S0 and S1 create an XOR gate while S2 and S3 create an AND gate. The switches are oriented so that the adjacent switch controls the next bit, meaning the outside switches control the least significant bit and the most signficant bit.</p>
 <p>So far, including the setup parts of the lab, about 18 hours were spent on this lab. This is the time it took without aiming to meet all “excellence” specifications. Personally, the turn around time from class 1, github + quartus setup, soldering/board setup, and lab 1 was very fast. I thought the actual lab was very interesting and not too complex, but the entire setup of everything was frustratingly long, particularly with missing components. I would recommend having the github, quartus, and soldering due the first week, and then having lab 1 get its own week.</p>
-<p><strong>AI Reflection</strong> <img src="images/lab1chat.png" class="img-fluid" alt="Figure 3: Screenshot of synthesize ChatGPT code"> As shown in Figure 3 above, ChatGPT’s solution to the prompt “Write SystemVerilog HDL to leverage the internal high speed oscillator in the Lattice UP5K FPGA and blink an LED at 2 Hz. Take full advantage of SystemVerilog syntax, for example, using logic instead of wire and reg.” synthesized! I was impressed that ChatGPT’s code synthesized first try, my own code did not. Although none of ChatGPT’s code was new to me, it did use a slightly different method to create the counter than I did. There also were no warning or error messages from this code. Although it was a simpler problem than the entire Lab 1, I still consider this result impressive. In the future, if it were allowed, I would likely try to use an LLM for hints when I get stuck. I think getting completely stuck is when the most time is wasted, and getting a slight push or inspiration would probably be helpful (especially when I’m working entirely alone). However, I would not want to rely on an LLM because I think they are generally pretty unreliable, and just because the code synthesized does not guarantee it would correctly solve the problem. <strong>Code</strong> Included below is my Verilog code.</p>
-<p>// Tali Smith, natasmith@hmc.edu, 9/1/25 // Lab 1 // Code for implementing 7-segment display to display all hexadecimal digits using 4 switches.</p>
+<p><strong>AI Reflection</strong><br>
+<img src="images/lab1chat.png" class="img-fluid" alt="Figure 3: Screenshot of synthesize ChatGPT code"> As shown in Figure 3 above, ChatGPT’s solution to the prompt “Write SystemVerilog HDL to leverage the internal high speed oscillator in the Lattice UP5K FPGA and blink an LED at 2 Hz. Take full advantage of SystemVerilog syntax, for example, using logic instead of wire and reg.” synthesized! I was impressed that ChatGPT’s code synthesized first try, my own code did not. Although none of ChatGPT’s code was new to me, it did use a slightly different method to create the counter than I did. There also were no warning or error messages from this code. Although it was a simpler problem than the entire Lab 1, I still consider this result impressive. In the future, if it were allowed, I would likely try to use an LLM for hints when I get stuck. I think getting completely stuck is when the most time is wasted, and getting a slight push or inspiration would probably be helpful (especially when I’m working entirely alone). However, I would not want to rely on an LLM because I think they are generally pretty unreliable, and just because the code synthesized does not guarantee it would correctly solve the problem.</p>
+<p><strong>Code</strong><br>
+Included below is my Verilog code.</p>
+<p>// Tali Smith, natasmith@hmc.edu, 9/1/25<br>
+// Lab 1<br>
+// Code for implementing 7-segment display to display all hexadecimal digits using 4 switches.</p>
 <p>module top(input logic clk, input logic [3:0] s, output logic [2:0] led, output logic [6:0] seg);</p>
 <pre><code>logic int_osc;
 logic pulse;
@@ -191,7 +199,7 @@ logic [24:0] counter = 0;
 // Internal high-speed oscillator
 HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc));
 
-// determine the correct segments based on hex represented by switches
+// determine the correct segments based on hex represented by switches  
 determineHex hex(clk, s, seg);
 
 // control the LEDs using the switches
@@ -211,7 +219,10 @@ always_ff @(posedge int_osc)
         end
     end</code></pre>
 <p>endmodule</p>
-<p>// Tali Smith, natasmith@hmc.edu, 9/1/25 // This module takes in the 4 switches and determines what segments of the 7-segment // display should be lit to represent hex value (for common anode display) module determineHex(input logic clk, input logic [3:0] s, output logic [6:0] seg);</p>
+<p>// Tali Smith, natasmith@hmc.edu, 9/1/25<br>
+// This module takes in the 4 switches and determines what segments of the 7-segment<br>
+// display should be lit to represent hex value (for common anode display)<br>
+module determineHex(input logic clk, input logic [3:0] s, output logic [6:0] seg);</p>
 <pre><code>always_comb
     case (s)
         4'b0000: seg = 7'b1000000; // 0
